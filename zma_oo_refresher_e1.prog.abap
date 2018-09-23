@@ -37,7 +37,13 @@ CLASS lcl_car IMPLEMENTATION.
 
   METHOD drive_distance.
 
-    mv_tank_level = mv_tank_level - ip_distance * mv_fuel_cons / 100.
+    IF ( ip_distance * mv_fuel_cons / 100 ) > mv_tank_level.
+      "not enough gas.
+      cl_demo_output=>display( |'Fuel only lasted: { mv_tank_level / mv_fuel_cons * 100 } km| ).
+      mv_tank_level = 0.
+    ELSE.
+      mv_tank_level = mv_tank_level - ip_distance * mv_fuel_cons / 100.
+    ENDIF.
 
   ENDMETHOD.
 
@@ -48,7 +54,6 @@ CLASS lcl_car IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD refuel.
-
     rv_liters_used = mv_tank_cap - mv_tank_level.
     mv_tank_level = mv_tank_cap.
 
@@ -70,6 +75,6 @@ START-OF-SELECTION.
                                ip_capacity = 65
                                ip_fuel_cons = 20 ).
 
-  lr_car1->drive_distance( 100  ).
+  lr_car1->drive_distance( 10000  ).
   cl_demo_output=>display( |'Fuel Level: { lr_car1->get_current_tank_level( ) }| ).
   lr_car1->refuel( ).
